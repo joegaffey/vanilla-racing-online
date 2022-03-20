@@ -1,0 +1,12 @@
+Test page for Vanilla Racing Online
+<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+
+<script>
+var socket = io();
+
+socket.emit('update', 123);
+
+socket.on('update', (msg) =>  {
+  console.log(msg);
+});  
+</script>

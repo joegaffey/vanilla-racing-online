@@ -1,0 +1,25 @@
+{
+  "name": "vanilla-racing-online",
+  "version": "0.0.1",
+  "description": "Old scjpool racing online",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.17.3",
+    "socket.io": "4.4.1"
+  },
+  "engines": {
+    "node": "16.14.2"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/vanilla-racing-online"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
