@@ -1,66 +1,60 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<h1>Vanilla Racing Online</h1>
-<div class="wrapper">
-  <span class="playerCount">How many</span> online.
-</div>
-  
-<h2>Players Online</h2>
-<div class="wrapper playerList">
-  None
-</div>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <!-- <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script> -->
+  </head>
+  <body>
+    <h1>Vanilla Racing Online</h1>
+    <div class="wrapper"><span class="playerCount">How many</span> online.</div>
+    
+    <h2>Players Online</h2>
+    <div class="wrapper playerList">None</div>
+    
+    <script>
+      const playerCountEl = document.querySelector(".playerCount");
+      const playerListEl = document.querySelector(".playerList");
 
-<!-- <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script> -->
+      setInterval(() => {
+        fetch("./players")
+          .then((response) => response.json())
+          .then((data) => {
+            render(data);
+          });
+      }, 2000);
 
-<script>
-
-const playerCountEl = document.querySelector('.playerCount');
-const playerListEl = document.querySelector('.playerList');
-
-setInterval(() => {
-  fetch('./players')
-    .then(response => response.json())
-    .then(data => {
-      // console.log(data)
-      const pCount = Object.keys(data).length
-      playerCountEl.innerHTML = pCount;
-      if(pCount === 0)
-        playerListEl.innerHTML = 'None';
-      else {
-        playerListEl.innerHTML = '';
-        Object.keys(data).forEach(
-          key => {
-            addPlayer(data[key]);
-          }
-        );
+      function render(data) {
+        const pCount = Object.keys(data).length;
+        playerCountEl.innerHTML = pCount;
+        if (pCount === 0) playerListEl.innerHTML = "None";
+        else {
+          playerListEl.innerHTML = "";
+          Object.keys(data).forEach((key) => {
+            renderPlayer(data[key]);
+          });
+        }
       }
-    })
-  }, 2000);
-  
-  function addPlayer(player) {
-    const str = `<div class="playerInfo">
-        <table>
-          <tr><td>ID</td><td>${player.id}</td></tr>
-          <tr><td>Joined</td><td>${new Date(player.startTime).toLocaleString('en-US')}</td></tr>
-          <tr><td>Track</td><td>${player.track}</td></tr>
-          <tr><td>Grid Position</td><td>${player.gridPosition}</td></tr>
-        </table>
-      </div>`;
-    playerListEl.innerHTML += str;
-  }
 
-// var socket = io('https://vanilla-racing-online.glitch.me', {
-//   withCredentials: true
-// });
-// socket.on('players', (msg) =>  {
-//   console.log(msg)
-//   playerCountEl.innerHTML = Object.keys(msg).length;
-// });
-</script>
-</body>
+      function renderPlayer(player) {
+        const str = `
+          <div class="playerInfo">
+            <table>
+              <tr><td>ID</td><td>${player.id}</td></tr>
+              <tr><td>Joined</td><td>${new Date(player.startTime).toLocaleString("en-US")}</td></tr>
+              <tr><td>Track</td><td>${player.track}</td></tr>
+              <tr><td>Grid Position</td><td>${player.gridPosition}</td></tr>
+            </table>
+          </div>`;
+        playerListEl.innerHTML += str;
+      }
+
+      // var socket = io('https://vanilla-racing-online.glitch.me', {
+      //   withCredentials: true
+      // });
+      // socket.on('players', (msg) =>  {
+      //   console.log(msg)
+      //   playerCountEl.innerHTML = Object.keys(msg).length;
+      // });
+    </script>
+  </body>
 </html>
