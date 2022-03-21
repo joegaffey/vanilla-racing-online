@@ -3,37 +3,47 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
 const io = new Server(server, {
   cors: {
-    origin: 'https://vanilla-racing-dev.glitch.me',
+    origin: [process.env.CLIENT_ORIGIN],
     methods: ['GET'],
     credentials: true
   }
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
+app.use(express.static('public'));
 
 const players = {};
+const trackPlayerCounts = new Array(1000).fill(0, 0, 1000);
+
+app.get('/players', (req, res) => {
+  res.send(players);
+});
 
 io.on('connection', (socket) => {
   console.log('Player connected ' + socket.id);
   
   socket.on('update', (msg) => {
-    socket.broadcast.emit('update', msg);
+    socket.to('room' + msg.track).emit('update', msg);
   });
   
   socket.on('newPlayer', (msg) => {
-    console.log('New player ' + socket.id);
+    if(players[socket.id])
+      return;
     msg.id = socket.id;
-    socket.broadcast.emit('newPlayer', msg);
+    socket.join('room' + msg.track);
+    trackPlayerCounts[msg.track]++;
+    msg.gridPosition = trackPlayerCounts[msg.track] - 1;
     players[socket.id] = msg;
-    socket.emit('players', players);
+    io.to('room' + msg.track).emit('players', players);
   });
   
   socket.on('disconnect', () => {
-    console.log('Player disconnected' + socket.id);
+    if(players[socket.id])
+      trackPlayerCounts[players[socket.id].track]--;
+    delete players[socket.id];
+    console.log('Player disconnected ' + socket.id);
     socket.broadcast.emit('playerExit', socket.id);
   });
 });
